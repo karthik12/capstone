@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.example.karthikeyan.restaurantfinder.model.Restaurant;
 import com.example.karthikeyan.restaurantfinder.model.Result;
+import com.example.karthikeyan.restaurantfinder.preference.ConfigurationManager;
 import com.example.karthikeyan.restaurantfinder.service.RestaurantService;
 
 import java.util.List;
@@ -57,7 +58,8 @@ public class RestaurantViewModel extends AndroidViewModel {
                 .build();
 
         RestaurantService recipeService = retrofit.create(RestaurantService.class);
-        Call<Result> resultCall = recipeService.restaurantResult(Utils.getRestaurantApiKey(), 1, "city");
+        ConfigurationManager instance = ConfigurationManager.getInstance();
+        Call<Result> resultCall = recipeService.restaurantResult(Utils.getRestaurantApiKey(), instance.getLocation(), instance.getLatitude(), instance.getLongitude());
         resultCall.enqueue(new Callback<Result>() {
             @Override
             public void onResponse(@NonNull Call<Result> call, @NonNull Response<Result> response) {

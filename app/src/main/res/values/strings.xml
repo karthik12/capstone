@@ -16,4 +16,7 @@
     <string name="OR">OR</string>
     <string name="Enter_Your_Location">Enter Your Location</string>
     <string name="SEARCH">SEARCH</string>
+    <string name="grant_location_permission">Location Permission is needed to access device Location</string>
+    <string name="unable_to_detect_location">Unable to detect Location. Please enter your Location Manually</string>
+    <string name="no_results">There are no favourite restaurants. Start adding favourites, so that you can view them later here</string>
 </resources>

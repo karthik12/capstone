@@ -15,7 +15,13 @@ import android.util.Log;
 
 import com.example.karthikeyan.restaurantfinder.App.RestaurantApp;
 import com.example.karthikeyan.restaurantfinder.database.RestaurantContract;
+import com.example.karthikeyan.restaurantfinder.model.Location;
+import com.example.karthikeyan.restaurantfinder.model.Restaurant;
 import com.example.karthikeyan.restaurantfinder.model.RestaurantInfo;
+import com.example.karthikeyan.restaurantfinder.model.UserRating;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by karthikeyan on 11/11/17.
@@ -99,5 +105,41 @@ public class Utils {
             if (cursor != null) cursor.close();
         }
         return false;
+    }
+
+    public static List<Restaurant> getFavRestaurants() {
+        List<Restaurant> restaurantList = new ArrayList<>();
+        List<RestaurantInfo> restaurantInfos = new ArrayList<>();
+        ContentResolver cr = RestaurantApp.getAppContext().getContentResolver();
+        try (Cursor data = cr.query(RestaurantContract.RestaurantEntry.CONTENT_URI, null, null, null, null)) {
+            if (data != null && data.moveToFirst()) {
+                RestaurantInfo restaurants;
+                do {
+                    String restaurantId = data.getString(data.getColumnIndex(RestaurantContract.RestaurantEntry.RESTAURANT_ID));
+                    String restaurantName = data.getString(data.getColumnIndex(RestaurantContract.RestaurantEntry.RESTAURANT_NAME));
+                    String restaurantBackDrop = data.getString(data.getColumnIndex(RestaurantContract.RestaurantEntry.RESTAURANT_BACKDROP_URI));
+                    String cuisines = data.getString(data.getColumnIndex(RestaurantContract.RestaurantEntry.RESTAURANT_CUISINES));
+                    Integer cost = data.getInt(data.getColumnIndex(RestaurantContract.RestaurantEntry.RESTAURANT_COST));
+                    String currency = data.getString(data.getColumnIndex(RestaurantContract.RestaurantEntry.RESTAURANT_CURRENCY));
+                    String rating = data.getString(data.getColumnIndex(RestaurantContract.RestaurantEntry.RESTAURANT_RATING));
+                    Integer online = data.getInt(data.getColumnIndex(RestaurantContract.RestaurantEntry.RESTAURANT_ONLINE));
+                    String address = data.getString(data.getColumnIndex(RestaurantContract.RestaurantEntry.RESTAURANT_ADDRESS));
+                    String city = data.getString(data.getColumnIndex(RestaurantContract.RestaurantEntry.RESTAURANT_CITY));
+                    String lat = data.getString(data.getColumnIndex(RestaurantContract.RestaurantEntry.RESTAURANT_LAT));
+                    String lon = data.getString(data.getColumnIndex(RestaurantContract.RestaurantEntry.RESTAURANT_LON));
+                    RestaurantInfo restaurantInfo = new RestaurantInfo(
+                            restaurantId, restaurantName, new Location(address, city, lat, lon)
+                            , cuisines, cost, currency, online, restaurantBackDrop, new UserRating(rating));
+
+                    restaurantInfos.add(restaurantInfo);
+                } while (data.moveToNext());
+                for (RestaurantInfo restaurant : restaurantInfos) {
+                    Restaurant rest = new Restaurant();
+                    rest.setRestaurant(restaurant);
+                    restaurantList.add(rest);
+                }
+            }
+        }
+        return restaurantList;
     }
 }

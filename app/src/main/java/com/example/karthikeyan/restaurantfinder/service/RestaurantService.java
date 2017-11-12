@@ -13,5 +13,6 @@ import retrofit2.http.Query;
 
 public interface RestaurantService {
     @GET("/api/v2.1//search")
-    Call<Result> restaurantResult(@Header("user-key") String key, @Query("entity_id") int id, @Query("entity_type") String type);
+    Call<Result> restaurantResult(@Header("user-key") String key, @Query("q") String searchQuery, @Query("lat") double lat, @Query("lon") double lon);
+
 }

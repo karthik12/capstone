@@ -23,6 +23,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.example.karthikeyan.restaurantfinder.adapter.RestaurantsAdapter;
@@ -31,9 +32,13 @@ import com.example.karthikeyan.restaurantfinder.model.Location;
 import com.example.karthikeyan.restaurantfinder.model.Restaurant;
 import com.example.karthikeyan.restaurantfinder.model.RestaurantInfo;
 import com.example.karthikeyan.restaurantfinder.model.UserRating;
+import com.example.karthikeyan.restaurantfinder.preference.ConfigurationManager;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 import static com.example.karthikeyan.restaurantfinder.Utils.isOnline;
 
@@ -46,8 +51,14 @@ public class MainActivityFragment extends Fragment implements RestaurantsAdapter
     private static final String TAG = "MainActivityFragment";
     public static final String RESTAURANT = "RESTAURANT";
     private static final int LOADER_ID = 123;
+    private static final String SHOWING_FAV = "SHOWING_FAV";
+    @BindView(R.id.recycler_view_main)
     RecyclerView recyclerView;
+    @BindView(R.id.progress_bar)
     ProgressBar progressBar;
+    @BindView(R.id.results_not_found)
+    LinearLayout noResult;
+
     RestaurantViewModel viewModel;
     RestaurantsAdapter adapter;
     private boolean favDisplaying;
@@ -57,8 +68,7 @@ public class MainActivityFragment extends Fragment implements RestaurantsAdapter
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container);
-        recyclerView = view.findViewById(R.id.recycler_view_main);
-        progressBar = view.findViewById(R.id.progress_bar);
+        ButterKnife.bind(this, view);
         return view;
     }
 
@@ -66,6 +76,11 @@ public class MainActivityFragment extends Fragment implements RestaurantsAdapter
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     @Override
@@ -84,6 +99,11 @@ public class MainActivityFragment extends Fragment implements RestaurantsAdapter
 
         adapter = new RestaurantsAdapter(viewModel.restaurants, this);
         recyclerView.setAdapter(adapter);
+        if (savedInstanceState != null && savedInstanceState.getBoolean(SHOWING_FAV)) {
+            favDisplaying = true;
+            fetchFavRestaurants();
+            return;
+        }
         if (!isOnline()) {
             Snackbar.make(getView(), R.string.no_connection, Snackbar.LENGTH_LONG).show();
             return;
@@ -111,7 +131,8 @@ public class MainActivityFragment extends Fragment implements RestaurantsAdapter
     }
 
     private void startSearchActivity() {
-        Intent intent = new Intent(getContext(),SearchActivity.class);
+        ConfigurationManager.getInstance().clear();
+        Intent intent = new Intent(getContext(), SearchActivity.class);
         getContext().startActivity(intent);
     }
 
@@ -121,6 +142,7 @@ public class MainActivityFragment extends Fragment implements RestaurantsAdapter
 
     private void observe() {
         if (favDisplaying) {
+            fetchFavRestaurants();
             return;
         }
         viewModel.getRestaurants().observe(this, result -> {
@@ -152,6 +174,7 @@ public class MainActivityFragment extends Fragment implements RestaurantsAdapter
     private void onlineViewChanges() {
         if (viewModel != null && viewModel.restaurants != null) {
             progressBar.setVisibility(View.GONE);
+            noResult.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
         }
     }
@@ -168,7 +191,12 @@ public class MainActivityFragment extends Fragment implements RestaurantsAdapter
 
     @Override
     public void accept(int position) {
-        List<Restaurant> value = viewModel.getRestaurants().getValue();
+        List<Restaurant> value = new ArrayList<>();
+        if (favDisplaying) {
+            getRestaurantList(value);
+        } else {
+            value = viewModel.getRestaurants().getValue();
+        }
         if (value == null) {
             Log.i(TAG, "onRecipeClicked: No recipe");
             return;
@@ -219,17 +247,32 @@ public class MainActivityFragment extends Fragment implements RestaurantsAdapter
 
                 restaurants.add(restaurantInfo);
             } while (data.moveToNext());
-            for (RestaurantInfo restaurant : restaurants) {
-                Restaurant rest = new Restaurant();
-                rest.setRestaurant(restaurant);
-                restaurantList.add(rest);
-            }
+            getRestaurantList(restaurantList);
             adapter.updateRestaurants(restaurantList);
+        }
+        if (data == null || !data.moveToFirst()) {
+            adapter.updateRestaurants(restaurantList);
+            noResult.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
+        }
+    }
+
+    private void getRestaurantList(List<Restaurant> restaurantList) {
+        for (RestaurantInfo restaurant : restaurants) {
+            Restaurant rest = new Restaurant();
+            rest.setRestaurant(restaurant);
+            restaurantList.add(rest);
         }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
 
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(SHOWING_FAV, favDisplaying);
     }
 }

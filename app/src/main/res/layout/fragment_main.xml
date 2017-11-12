@@ -12,7 +12,32 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"
-        tools:visibility="visible" />
+        tools:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/results_not_found"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:gravity="center"
+        android:layout_gravity="center"
+        tools:visibility="visible">
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center"
+            android:src="@drawable/noresult" />
+
+        <TextView
+            android:gravity="center"
+            style="@style/text_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/no_results" />
+    </LinearLayout>
 
     <android.support.v4.widget.ContentLoadingProgressBar
         android:id="@+id/progress_bar"
@@ -20,5 +45,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:visibility="gone" />
+
 
 </LinearLayout>

@@ -15,12 +15,15 @@ import android.widget.ImageView;
 
 import com.example.karthikeyan.restaurantfinder.model.Restaurant;
 import com.example.karthikeyan.restaurantfinder.model.RestaurantInfo;
+import com.example.karthikeyan.restaurantfinder.widget.RestaurantInfoWidgetManager;
 import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.example.karthikeyan.restaurantfinder.MainActivityFragment.RESTAURANT;
+import static com.example.karthikeyan.restaurantfinder.widget.RestaurantInfoWidget.POSITION;
+import static com.example.karthikeyan.restaurantfinder.widget.RestaurantInfoWidget.RESTAURANT_LIST;
 
 /**
  * Created by karthikeyan on 12/11/17.
@@ -115,6 +118,12 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         if (extras == null) {
             throw new IllegalStateException();
         }
+        if (extras.containsKey(RESTAURANT_LIST)) {
+            String list = extras.getString(RESTAURANT_LIST);
+            int pos = extras.getInt(POSITION);
+            return new RestaurantInfoWidgetManager().getInfo(list, pos);
+
+        }
         if (!extras.containsKey(RESTAURANT)) {
             throw new IllegalStateException();
         }
@@ -136,5 +145,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             Utils.addToFavorites(this, restaurantInfo);
             favourite.setImageResource(R.drawable.ic_bookmark);
         }
+        new RestaurantInfoWidgetManager().updateWidgetRecipe(Utils.getFavRestaurants());
     }
 }
