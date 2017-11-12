@@ -7,14 +7,18 @@ import android.os.Parcelable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Restaurant implements Parcelable{
+public class Restaurant implements Parcelable {
 
     @SerializedName("restaurant")
     @Expose
     private RestaurantInfo restaurant;
 
-    protected Restaurant(Parcel in) {
+    public Restaurant(Parcel in) {
         restaurant = in.readParcelable(RestaurantInfo.class.getClassLoader());
+    }
+
+    public Restaurant() {
+
     }
 
     @Override
@@ -46,5 +50,6 @@ public class Restaurant implements Parcelable{
     public void setRestaurant(RestaurantInfo restaurant) {
         this.restaurant = restaurant;
     }
+
 
 }

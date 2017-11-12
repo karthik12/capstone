@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.example.karthikeyan.restaurantfinder.model.Restaurant;
+import com.example.karthikeyan.restaurantfinder.model.RestaurantInfo;
 import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
@@ -73,7 +74,11 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
 
     private void initFav() {
-
+        if (Utils.isFavorite(this, restaurant.getRestaurant())) {
+            favourite.setImageResource(R.drawable.ic_bookmark);
+        } else {
+            favourite.setImageResource(R.drawable.ic_bookmark_border);
+        }
     }
 
     private void loadBackDrop() {
@@ -119,5 +124,17 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public void onClick(View view) {
         Log.d(TAG, "onClick() called with: view = [" + view + "]");
+        setFavorite();
+    }
+
+    private void setFavorite() {
+        RestaurantInfo restaurantInfo = restaurant.getRestaurant();
+        if (Utils.isFavorite(this, restaurantInfo)) {
+            Utils.removeFromFavorites(this, restaurantInfo.getId());
+            favourite.setImageResource(R.drawable.ic_bookmark_border);
+        } else {
+            Utils.addToFavorites(this, restaurantInfo);
+            favourite.setImageResource(R.drawable.ic_bookmark);
+        }
     }
 }

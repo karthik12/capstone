@@ -1,11 +1,22 @@
 package com.example.karthikeyan.restaurantfinder;
 
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.karthikeyan.restaurantfinder.model.Location;
+import com.example.karthikeyan.restaurantfinder.model.RestaurantInfo;
+
+import java.util.Locale;
+
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -14,6 +25,24 @@ import butterknife.ButterKnife;
 
 public class DetailActiviyFragment extends AbstractRestaurantFragment {
 
+
+    @BindView(R.id.cuisines)
+    TextView cuisines;
+
+    @BindView(R.id.cost)
+    TextView cost;
+
+    @BindView(R.id.ratings)
+    TextView ratings;
+
+    @BindView(R.id.online)
+    TextView online;
+
+    @BindView(R.id.address)
+    TextView address;
+
+    @BindView(R.id.open_in_map)
+    TextView map;
 
     @Nullable
     @Override
@@ -32,6 +61,27 @@ public class DetailActiviyFragment extends AbstractRestaurantFragment {
     }
 
     private void loadContent() {
+        RestaurantInfo restaurantInfo = restaurant.getRestaurant();
+        cuisines.setText(restaurantInfo.getCuisines());
+        cost.setText(restaurantInfo.getCurrency() + " " + restaurantInfo.getAverageCostForTwo());
+        ratings.setText(restaurantInfo.getUserRating().getAggregateRating() + "/5");
+        int visible = restaurantInfo.getHasOnlineDelivery() == 1 ? View.VISIBLE : View.GONE;
+        online.setVisibility(visible);
+        final Location location = restaurantInfo.getLocation();
+        address.setText(location.getAddress());
+        map.setOnClickListener(view -> {
+            openMaps(location);
+        });
+    }
+
+    private void openMaps(Location location) {
+        try {
+            String uri = String.format(Locale.ENGLISH, "geo:%f,%f", Float.parseFloat(location.getLatitude()), Float.parseFloat(location.getLongitude()));
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+            getActivity().startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(getActivity(), R.string.install_map, Toast.LENGTH_LONG).show();
+        }
 
     }
 }

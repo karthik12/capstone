@@ -2,4 +2,18 @@
     <string name="app_name">RestaurantFinder</string>
     <string name="result_retrieve_error">unable to get Restaurant list</string>
     <string name="no_connection">No Internet Connection!</string>
+    <string name="CUISINES">CUISINES</string>
+    <string name="COST_FOR_TWO">COST FOR TWO</string>
+    <string name="serves_online_delivery">Has online delivery</string>
+    <string name="RATINGS">RATINGS</string>
+    <string name="Address">Address</string>
+    <string name="MAPSANDDIRECTION">MAPS AND DIRECTION</string>
+    <string name="install_map">Please install a maps application</string>
+    <string name="favourite">Favourite</string>
+    <string name="All_Restaurant">All Restaurants</string>
+    <string name="search">Search</string>
+    <string name="DETECT_MY_LOCATION">DETECT MY LOCATION</string>
+    <string name="OR">OR</string>
+    <string name="Enter_Your_Location">Enter Your Location</string>
+    <string name="SEARCH">SEARCH</string>
 </resources>

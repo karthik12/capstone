@@ -1,14 +1,14 @@
-
 package com.example.karthikeyan.restaurantfinder.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class RestaurantInfo implements Parcelable{
+import java.util.List;
+
+public class RestaurantInfo implements Parcelable {
 
     @SerializedName("apikey")
     @Expose
@@ -46,6 +46,9 @@ public class RestaurantInfo implements Parcelable{
     @SerializedName("thumb")
     @Expose
     private String thumb;
+    @SerializedName("user_rating")
+    @Expose
+    private UserRating userRating;
     @SerializedName("photos_url")
     @Expose
     private String photosUrl;
@@ -67,6 +70,9 @@ public class RestaurantInfo implements Parcelable{
     @SerializedName("has_table_booking")
     @Expose
     private Integer hasTableBooking;
+    @SerializedName("book_url")
+    @Expose
+    private String bookUrl;
     @SerializedName("events_url")
     @Expose
     private String eventsUrl;
@@ -74,11 +80,24 @@ public class RestaurantInfo implements Parcelable{
     @Expose
     private List<Object> establishmentTypes = null;
 
+    public RestaurantInfo(String id, String name, Location location, String cuisines, Integer averageCostForTwo, String currency, Integer hasOnlineDelivery, String featuredImage, UserRating  rating) {
+        this.id = id;
+        this.name = name;
+        this.location = location;
+        this.cuisines = cuisines;
+        this.averageCostForTwo = averageCostForTwo;
+        this.currency = currency;
+        this.hasOnlineDelivery = hasOnlineDelivery;
+        this.featuredImage = featuredImage;
+        this.userRating = rating;
+    }
+
     protected RestaurantInfo(Parcel in) {
         apikey = in.readString();
         id = in.readString();
         name = in.readString();
         url = in.readString();
+        location = in.readParcelable(Location.class.getClassLoader());
         if (in.readByte() == 0) {
             switchToOrderMenu = null;
         } else {
@@ -97,6 +116,7 @@ public class RestaurantInfo implements Parcelable{
         }
         currency = in.readString();
         thumb = in.readString();
+        userRating = in.readParcelable(UserRating.class.getClassLoader());
         photosUrl = in.readString();
         menuUrl = in.readString();
         featuredImage = in.readString();
@@ -116,6 +136,7 @@ public class RestaurantInfo implements Parcelable{
         } else {
             hasTableBooking = in.readInt();
         }
+        bookUrl = in.readString();
         eventsUrl = in.readString();
     }
 
@@ -125,6 +146,7 @@ public class RestaurantInfo implements Parcelable{
         dest.writeString(id);
         dest.writeString(name);
         dest.writeString(url);
+        dest.writeParcelable(location, flags);
         if (switchToOrderMenu == null) {
             dest.writeByte((byte) 0);
         } else {
@@ -146,6 +168,7 @@ public class RestaurantInfo implements Parcelable{
         }
         dest.writeString(currency);
         dest.writeString(thumb);
+        dest.writeParcelable(userRating, flags);
         dest.writeString(photosUrl);
         dest.writeString(menuUrl);
         dest.writeString(featuredImage);
@@ -168,6 +191,7 @@ public class RestaurantInfo implements Parcelable{
             dest.writeByte((byte) 1);
             dest.writeInt(hasTableBooking);
         }
+        dest.writeString(bookUrl);
         dest.writeString(eventsUrl);
     }
 
@@ -284,6 +308,14 @@ public class RestaurantInfo implements Parcelable{
         this.thumb = thumb;
     }
 
+    public UserRating getUserRating() {
+        return userRating;
+    }
+
+    public void setUserRating(UserRating userRating) {
+        this.userRating = userRating;
+    }
+
     public String getPhotosUrl() {
         return photosUrl;
     }
@@ -340,6 +372,14 @@ public class RestaurantInfo implements Parcelable{
         this.hasTableBooking = hasTableBooking;
     }
 
+    public String getBookUrl() {
+        return bookUrl;
+    }
+
+    public void setBookUrl(String bookUrl) {
+        this.bookUrl = bookUrl;
+    }
+
     public String getEventsUrl() {
         return eventsUrl;
     }
@@ -355,5 +395,6 @@ public class RestaurantInfo implements Parcelable{
     public void setEstablishmentTypes(List<Object> establishmentTypes) {
         this.establishmentTypes = establishmentTypes;
     }
+
 
 }
